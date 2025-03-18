@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cargar Fotografía del Trabajador</title>
+    <style>
+        body { font-family: sans-serif; }
+        .container { width: 80%; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; }
+        h1, h2 { text-align: center; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input[type="file"],
+        .form-group input[type="text"],
+        .form-group button { padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: calc(100% - 22px); box-sizing: border-box; font-size: 1em; }
+        .form-group button { background-color: #007bff; color: white; cursor: pointer; transition: background-color 0.3s; }
+        .form-group button:hover { background-color: #0056b3; }
+        #camera-container { margin-top: 20px; text-align: center; border: 1px dashed #ccc; padding: 15px; }
+        #video-preview { max-width: 100%; height: auto; }
+        #capture-button { background-color: #28a745; }
+        #capture-button:hover { background-color: #1e7e34; }
+        #foto-capturada-input { display: none; }
+        .message { margin-top: 20px; padding: 10px; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .back-link { display: block; margin-top: 20px; text-align: center; color: #007bff; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cargar Fotografía del Trabajador</h1>
+
+        {% if mensaje %}
+            <div class="message {% if 'exito' in mensaje %}success{% else %}error{% endif %}">{{ mensaje }}</div>
+        {% endif %}
+
+        <h2>Opción 1: Cargar desde Archivo</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="cedula_foto_archivo">Cédula del Trabajador:</label>
+                <input type="text" id="cedula_foto_archivo" name="cedula_foto_archivo" required>
+            </div>
+            <div class="form-group">
+                <label for="foto_archivo">Seleccionar Fotografía:</label>
+                <input type="file" id="foto_archivo" name="foto_archivo" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Subir Fotografía</button>
+            </div>
+        </form>
+
+        <hr>
+
+        <h2>Opción 2: Capturar desde Cámara</h2>
+        <div id="camera-container">
+            <video id="video-preview" width="320" height="240" autoplay></video>
+            <button id="start-camera-button">Iniciar Cámara</button>
+            <button id="capture-button" disabled>Capturar Foto</button>
+            <input type="hidden" id="foto-capturada-input" name="foto_capturada">
+            <div class="form-group" style="margin-top: 10px;">
+                <label for="cedula_foto_camara">Cédula del Trabajador:</label>
+                <input type="text" id="cedula_foto_camara" name="cedula_foto_camara" required>
+            </div>
+            <button type="button" onclick="enviarFotoCamara()" disabled>Guardar Foto Capturada</button>
+        </div>
+
+        <a href="{{ url_for('dashboard') }}" class="back-link">Volver al Panel de Control</a>
+    </div>
+
+    <script>
+        const videoPreview = document.getElementById('video-preview');
+        const startCameraButton = document.getElementById('start-camera-button');
+        const captureButton = document.getElementById('capture-button');
+        const fotoCapturadaInput = document.getElementById('foto-capturada-input');
+        let stream;
+
+        startCameraButton.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                videoPreview.srcObject = stream;
+                startCameraButton.disabled = true;
+                captureButton.disabled = false;
+                document.querySelector('#camera-container button[onclick="enviarFotoCamara()"]').disabled = false;
+            } catch (err) {
+                console.error("Error accessing the camera: ", err);
+                alert("No se pudo acceder a la cámara. Asegúrate de que esté habilitada.");
+            }
+        });
+
+        captureButton.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = videoPreview.videoWidth;
+            canvas.height = videoPreview.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+            const imageDataURL = canvas.toDataURL('image/png');
+            fotoCapturadaInput.value = imageDataURL;
+            // Aquí podrías mostrar una vista previa de la foto capturada si lo deseas
+        });
+
+        function enviarFotoCamara() {
+            if (fotoCapturadaInput.value) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/cargar_fotografia';
+
+                const cedulaInput = document.createElement('input');
+                cedulaInput.type = 'hidden';
+                cedulaInput.name = 'cedula_foto_camara';
+                cedulaInput.value = document.getElementById('cedula_foto_camara').value;
+                form.appendChild(cedulaInput);
+
+                const fotoInput = document.createElement('input');
+                fotoInput.type = 'hidden';
+                fotoInput.name = 'foto_capturada';
+                fotoInput.value = fotoCapturadaInput.value;
+                form.appendChild(fotoInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                alert("Por favor, captura una foto primero.");
+            }
+        }
+    </script>
+</body>
+</html>

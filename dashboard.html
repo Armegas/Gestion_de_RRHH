@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panel de Control</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centrar elementos horizontalmente */
+            min-height: 100vh; /* Asegurar que el body ocupe al menos toda la altura de la ventana */
+        }
+
+        .logo-container {
+            margin-top: 20px;
+            text-align: center; /* Centrar el logo */
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
+        }
+
+        h1 {
+            font-size: 3em; /* Más grande */
+            color: #00FFFF; /* Neon Azul */
+            text-shadow: 0 0 10px #3403e2, 0 0 20px #00FFFF, 0 0 30px #00FFFF; /* Efecto neón */
+            margin-top: 30px;
+            margin-bottom: 40px;
+            text-align: center; /* Centrar el título */
+        }
+
+        .dashboard-options {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centrar las opciones */
+            width: 80%; /* Ancho del contenedor de opciones */
+            max-width: 600px; /* Ancho máximo del contenedor */
+        }
+
+        .dashboard-option {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 1.5em; /* Más grande */
+            text-decoration: none;
+            color: #333;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s; /* Transición suave para el hover */
+        }
+
+        .dashboard-option:hover {
+            background-color: #00FFFF;
+            color: #fff;
+            text-shadow: 0 0 5px #00FFFF; /* Pequeño efecto neón al pasar el ratón */
+        }
+
+        .logout-button-container {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .logout-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #dc3545; /* Rojo */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='AZ/logo.png') }}" alt="Logo" class="logo">
+    </div>
+
+    <h1>Panel de Control</h1>
+
+    <div class="dashboard-options">
+        <a href="{{ url_for('cargar_trabajador') }}" class="dashboard-option">1) Cargar datos del Trabajador</a>
+        <a href="{{ url_for('editar_trabajador') }}" class="dashboard-option">2) Editar datos del trabajador</a>
+        <a href="{{ url_for('cargar_fotografia') }}" class="dashboard-option">3) Cargar fotografía del trabajador</a>
+        <a href="{{ url_for('cargar_documentos') }}" class="dashboard-option">4) Cargar Cedula y Rif del trabajador</a>
+        <a href="{{ url_for('generar_curriculum') }}" class="dashboard-option">5) Generar Dashboard del trabajador</a>
+        <a href="{{ url_for('reportes_especificos') }}" class="dashboard-option">6) Reportes Específicos</a>
+    </div>
+
+    <div class="logout-button-container">
+        <a href="{{ url_for('login') }}" class="logout-button">Salir del Programa</a>
+    </div>
+
+</body>
+</html>

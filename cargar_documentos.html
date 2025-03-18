@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cargar Cédula y RIF del Trabajador</title>
+    <style>
+        body { font-family: sans-serif; }
+        .container { width: 80%; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; }
+        h1 { text-align: center; color: #333; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input[type="file"],
+        .form-group input[type="text"],
+        .form-group button { padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: calc(100% - 22px); box-sizing: border-box; font-size: 1em; }
+        .form-group button { background-color: #007bff; color: white; cursor: pointer; transition: background-color 0.3s; }
+        .form-group button:hover { background-color: #0056b3; }
+        .message { margin-top: 20px; padding: 10px; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .back-link { display: block; margin-top: 20px; text-align: center; color: #007bff; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cargar Cédula y RIF del Trabajador</h1>
+
+        {% if mensaje %}
+            <div class="message {% if 'exito' in mensaje %}success{% else %}error{% endif %}">{{ mensaje|safe }}</div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="cedula_documentos">Cédula del Trabajador:</label>
+                <input type="text" id="cedula_documentos" name="cedula_documentos" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cedula_archivo">Seleccionar Imagen de la Cédula:</label>
+                <input type="file" id="cedula_archivo" name="cedula_archivo" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label for="rif_archivo">Seleccionar Imagen del RIF:</label>
+                <input type="file" id="rif_archivo" name="rif_archivo" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <button type="submit">Subir Documentos</button>
+            </div>
+        </form>
+
+        <a href="{{ url_for('dashboard') }}" class="back-link">Volver al Panel de Control</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reportes Personalizado</title>
+    <style>
+        body { font-family: sans-serif; }
+        .container { width: 90%; max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; }
+        h1, h2 { color: #333; }
+        form label { display: block; margin-bottom: 5px; font-weight: bold; }
+        form input[type="text"], form input[type="number"], form select { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 3px; box-sizing: border-box; }
+        form button[type="submit"] { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 3px; cursor: pointer; }
+        .back-link { display: block; margin-top: 20px; text-align: center; color: #007bff; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reportes Personalizado</h1>
+        <p>Selecciona los criterios para generar tu reporte personalizado.</p>
+        <form method="POST" action="{{ url_for('reportes_personalizado') }}">
+            <label for="tipo_trabajador">Tipo de Trabajador:</label>
+            <select name="tipo_trabajador">
+                <option value="">Todos</option>
+                <option value="empleado">Empleado</option>
+                <option value="obrero">Obrero</option>
+            </select>
+
+            <label for="jefe">Jefe:</label>
+            <input type="text" name="jefe" placeholder="Nombre del Jefe (opcional)">
+
+            <label for="concejo_comunal">Concejo Comunal:</label>
+            <input type="text" name="concejo_comunal" placeholder="Nombre del Concejo Comunal (opcional)">
+
+            <label for="pertenece_psuv">Perteneciente al PSUV:</label>
+            <select name="pertenece_psuv">
+                <option value="">Todos</option>
+                <option value="si">Sí</option>
+                <option value="no">No</option>
+            </select>
+
+            <label for="centro_votacion">Centro de Votación:</label>
+            <input type="text" name="centro_votacion" placeholder="Nombre del Centro de Votación (opcional)">
+
+            <button type="submit">Generar Reporte</button>
+        </form>
+        <a href="{{ url_for('reportes_especificos') }}" class="back-link">Volver a Reportes Específicos</a>
+    </div>
+</body>
+</html>

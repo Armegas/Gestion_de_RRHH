@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resultados del Reporte Personalizado</title>
+    <style>
+        body { font-family: sans-serif; }
+        .container { width: 90%; max-width: 1200px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; }
+        h1, h2 { color: #333; }
+        h3 { margin-top: 15px; }
+        .report-list { list-style: none; padding-left: 0; }
+        .report-list li { margin-bottom: 5px; }
+        .filter-info { margin-bottom: 15px; border: 1px solid #eee; padding: 10px; border-radius: 3px; background-color: #fff; }
+        .back-link { display: block; margin-top: 20px; text-align: center; color: #007bff; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Resultados del Reporte Personalizado</h1>
+        <div class="filter-info">
+            <h3>Filtros Aplicados:</h3>
+            <ul>
+                {% for key, value in filtros.items() %}
+                    {% if value %}
+                        <li>{{ key|replace('_', ' ')|capitalize }}: {{ value }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        {% if resultados %}
+            <h2>Trabajadores Encontrados:</h2>
+            <ul class="report-list">
+                {% for trabajador in resultados %}
+                    <li>{{ trabajador.nombres }} {{ trabajador.apellidos }} - Cédula: {{ trabajador.cedula }} - Teléfono: {{ trabajador.telefono_movil }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No se encontraron trabajadores que coincidan con los criterios de filtro.</p>
+        {% endif %}
+
+        <a href="{{ url_for('reportes_personalizado') }}" class="back-link">Volver a Filtro Personalizado</a>
+        <a href="{{ url_for('reportes_especificos') }}" class="back-link">Volver a Reportes Específicos</a>
+    </div>
+</body>
+</html>

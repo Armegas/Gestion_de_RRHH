@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generar Currículum del Trabajador</title>
+    <style>
+        body { font-family: sans-serif; }
+        .container { width: 80%; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; }
+        h1 { text-align: center; color: #333; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input[type="text"],
+        .form-group button { padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: calc(100% - 22px); box-sizing: border-box; font-size: 1em; }
+        .form-group button { background-color: #007bff; color: white; cursor: pointer; transition: background-color 0.3s; }
+        .form-group button:hover { background-color: #0056b3; }
+        .message-error { color: red; margin-top: 10px; text-align: center; }
+        .back-link { display: block; margin-top: 20px; text-align: center; color: #007bff; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generar Currículum del Trabajador</h1>
+
+        <form method="POST" action="/generar_curriculum">
+            <div class="form-group">
+                <label for="cedula_buscar">Introduce Número de Cédula:</label>
+                <input type="text" id="cedula_buscar" name="cedula_buscar" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Generar Currículum</button>
+            </div>
+        </form>
+
+        {% if mensaje_error %}
+            <p class="message-error">{{ mensaje_error }}</p>
+        {% endif %}
+
+        <a href="{{ url_for('dashboard') }}" class="back-link">Volver al Panel de Control</a>
+    </div>
+</body>
+</html>

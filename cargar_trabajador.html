@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cargar Datos del Trabajador</title>
+    <style>
+        body { font-family: sans-serif; }
+        .form-section { margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; }
+        .form-section h3, .form-section h4 { margin-top: 0; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: inline-block; width: 200px; text-align: right; margin-right: 10px; }
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group input[type="email"],
+        .form-group select { width: 250px; padding: 5px; border: 1px solid #ddd; }
+        .form-group input[type="checkbox"] { margin-left: 200px; }
+        .hidden { display: none; }
+        #datos-conyuge, #datos-familiares, #datos-hijos-container, #cantidad-hijos-container, #tratamiento-container, #tipo-discapacidad-container { border: 1px dashed #aaa; padding: 10px; margin-top: 10px; }
+        .hijo-form { border: 1px solid #eee; padding: 10px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Cargar Datos del Trabajador</h1>
+
+    <form method="POST" action="/guardar_trabajador">
+        <div class="form-section">
+            <h3>Datos del Trabajador</h3>
+            <div class="form-group">
+                <label for="tipo_trabajador">Tipo de trabajador:</label>
+                <select id="tipo_trabajador" name="tipo_trabajador">
+                    <option value="Empleado">Empleado</option>
+                    <option value="Obrero">Obrero</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Datos Personales</h3>
+            <div class="form-group">
+                <label for="nombres">Nombres:</label>
+                <input type="text" id="nombres" name="nombres" required>
+            </div>
+            <div class="form-group">
+                <label for="apellidos">Apellidos:</label>
+                <input type="text" id="apellidos" name="apellidos" required>
+            </div>
+            <div class="form-group">
+                <label for="cedula">Cédula:</label>
+                <input type="text" id="cedula" name="cedula" required>
+            </div>
+            <div class="form-group">
+                <label for="rif">RIF:</label>
+                <input type="text" id="rif" name="rif">
+            </div>
+            <div class="form-group">
+                <label for="genero">Género:</label>
+                <select id="genero" name="genero">
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fecha_nacimiento">Fecha de nacimiento:</label>
+                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" onchange="calcularEdad()">
+            </div>
+            <div class="form-group">
+                <label for="lugar_nacimiento">Lugar de nacimiento:</label>
+                <input type="text" id="lugar_nacimiento" name="lugar_nacimiento">
+            </div>
+            <div class="form-group">
+                <label for="edad">Edad:</label>
+                <input type="text" id="edad" name="edad" readonly>
+            </div>
+            <div class="form-group">
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" name="direccion">
+            </div>
+            <div class="form-group">
+                <label for="estado_civil">Estado civil:</label>
+                <select id="estado_civil" name="estado_civil" onchange="mostrarDatosConyuge(); calcularCargaFamiliar()">
+                    <option value="Soltero">Soltero</option>
+                    <option value="Casado">Casado</option>
+                    <option value="Viudo">Viudo</option>
+                    <option value="Union">Unión Estable</option>
+                </select>
+            </div>
+            <div id="datos-conyuge" class="hidden">
+                <h4>Datos del Cónyuge</h4>
+                <div class="form-group">
+                    <label for="nombre_conyuge">Nombre del Cónyuge:</label>
+                    <input type="text" id="nombre_conyuge" name="nombre_conyuge">
+                </div>
+                <div class="form-group">
+                    <label for="cedula_conyuge">Cédula del Cónyuge:</label>
+                    <input type="text" id="cedula_conyuge" name="cedula_conyuge">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="tiene_familiares">Tiene Otros Familiares:</label>
+                <select id="tiene_familiares" name="tiene_familiares" onchange="mostrarDatosFamiliares(); calcularCargaFamiliar()">
+                    <option value="No">No</option>
+                    <option value="Sí">Sí</option>
+                </select>
+            </div>
+            <div id="datos-familiares" class="hidden">
+                <h4>Datos del Familiar</h4>
+                <div class="form-group">
+                    <label for="nombre_familiar">Nombre del Familiar:</label>
+                    <input type="text" id="nombre_familiar" name="nombre_familiar">
+                </div>
+                <div class="form-group">
+                    <label for="parentesco_familiar">Parentesco del Familiar:</label>
+                    <input type="text" id="parentesco_familiar" name="parentesco_familiar">
+                </div>
+                <div class="form-group">
+                    <label for="fecha_nacimiento_familiar">Fecha de Nacimiento del Familiar:</label>
+                    <input type="date" id="fecha_nacimiento_familiar" name="fecha_nacimiento_familiar" onchange="calcularEdadFamiliar()">
+                </div>
+                <div class="form-group">
+                    <label for="edad_familiar">Edad del Familiar:</label>
+                    <input type="text" id="edad_familiar" name="edad_familiar" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="tiene_hijos">Tienes Hijos:</label>
+                <select id="tiene_hijos" name="tiene_hijos" onchange="mostrarCantidadHijos()">
+                    <option value="No">No</option>
+                    <option value="Sí">Sí</option>
+                </select>
+            </div>
+            <div id="cantidad-hijos-container" class="hidden">
+                <div class="form-group">
+                    <label for="cantidad_hijos">¿Cuántos Hijos Tienes (máx. 7)?</label>
+                    <select id="cantidad_hijos" name="cantidad_hijos" onchange="mostrarDatosHijos(); calcularCargaFamiliar()">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
+            </div>
+            <div id="datos-hijos-container">
+                </div>
+            <div class="form-group">
+                <label for="total_carga_familiar">Total Carga Familiar:</label>
+                <input type="text" id="total_carga_familiar" name="total_carga_familiar" value="1" readonly>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Datos de Contacto</h3>
+            <div class="form-group">
+                <label for="telefono_movil">Teléfono móvil:</label>
+                <input type="text" id="telefono_movil" name="telefono_movil">
+            </div>
+            <div class="form-group">
+                <label for="telefono_local">Teléfono local:</label>
+                <input type="text" id="telefono_local" name="telefono_local">
+            </div>
+            <div class="form-group">
+                <label for="telefono_referencia">Teléfono de referencia:</label>
+                <input type="text" id="telefono_referencia" name="telefono_referencia">
+            </div>
+            <div class="form-group">
+                <label for="correo_electronico">Correo electrónico:</label>
+                <input type="email" id="correo_electronico" name="correo_electronico">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Datos Política</h3>
+            <div class="form-group">
+                <label for="org_social">Pertenece a Org. Social:</label>
+                <input type="text" id="org_social" name="org_social">
+            </div>
+            <div class="form-group">
+                <label for="voceria">Vocería:</label>
+                <input type="text" id="voceria" name="voceria">
+            </div>
+            <div class="form-group">
+                <label for="pertenece_psuv">Pertenece a PSUV:</label>
+                <select id="pertenece_psuv" name="pertenece_psuv">
+                    <option value="No">No</option>
+                    <option value="Sí">Sí</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="lugar_vota">Lugar donde Vota:</label>
+                <input type="text" id="lugar_vota" name="lugar_vota">
+            </div>
+            <div class="form-group">
+                <label for="tiene_emprendimiento">Tiene Emprendimiento Registrado:</label>
+                <select id="tiene_emprendimiento" name="tiene_emprendimiento">
+                    <option value="No">No</option>
+                    <option value="Sí">Sí</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="nombre_consejo_comunal">Nombre del Consejo Comunal:</label>
+                <input type="text" id="nombre_consejo_comunal" name="nombre_consejo_comunal">
+            </div>
+            <div class="form-group">
+                <label for="nombre_comuna">Nombre de la Comuna:</label>
+                <input type="text" id="nombre_comuna" name="nombre_comuna">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Datos de Salud</h3>
+            <div class="form-group">
+                <label for="tipo_sangre">Tipo de sangre:</label>
+                <select id="tipo_sangre" name="tipo_sangre">
+                    <option value="">Seleccione</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="padece_enfermedad">Padece de alguna Enfermedad:</label>
+                <select id="padece_enfermedad" name="padece_enfermedad" onchange="mostrarTratamiento()">
+                    <option value="No">No</option>
+                    <option value="Sí">Sí</option>
+                </select>
+            </div>
+            <div id="tratamiento-container" class="hidden">
+                <div class="form-group">
+                    <label for="tratamiento">Tratamiento:</label>
+                    <input type="text" id="tratamiento" name="tratamiento">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="discapacidad">Discapacidad:</label>
+                <select id="discapacidad" name="discapacidad" onchange="mostrarTipoDiscapacidad()">
+                    <option value="No">No</option>
+                    <option value="Sí">Sí</option>
+                </select>
+            </div>
+            <div id="tipo-discapacidad-container" class="hidden">
+                <div class="form-group">
+                    <label for="tipo_discapacidad">Tipo de discapacidad:</label>
+                    <input type="text" id="tipo_discapacidad" name="tipo_discapacidad">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Datos Talla del Trabajador</h3>
+            <div class="form-group">
+                <label for="talla_zapato">Talla de zapato:</label>
+                <select id="talla_zapato" name="talla_zapato">
+                    <option value="">Seleccione</option>
+                    <option value="35">35</option>
+                    <option value="36">36</option>
+                    <option value="37">37</option>
+                    <option value="38">38</option>
+                    <option value="39">39</option>
+                    <option value="40">40</option>
+                    <option value="41">41</option>
+                    <option value="42">42</option>
+                    <option value="43">43</option>
+                    <option value="44">44</option>
+                    <option value="45">45</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="talla_camisa">Talla de camisa:</label>
+                <select id="talla_camisa" name="talla_camisa">
+                    <option value="">Seleccione</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="talla_pantalon">Talla de pantalón:</label>
+                <select id="talla_pantalon" name="talla_pantalon">
+                    <option value="">Seleccione</option>
+                    <option value="28">28</option>
+                    <option value="30">30</option>
+                    <option value="32">32</option>
+                    <option value="34">34</option>
+                    <option value="36">36</option>
+                    <option value="38">38</option>
+                    <option value="40">40</option>
+                    <option value="42">42</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Datos Nomina</h3>
+            <div class="form-group">
+                <label for="fecha_ingreso">Fecha de ingreso:</label>
+                <input type="date" id="fecha_ingreso" name="fecha_ingreso">
+            </div>
+            <div class="form-group">
+                <label for="cargo">Cargo:</label>
+                <input type="text" id="cargo" name="cargo">
+            </div>
+            <div class="form-group">
+                <label for="ubicacion">Ubicación:</label>
+                <input type="text" id="ubicacion" name="ubicacion">
+            </div>
+            <div class="form-group">
+                <label for="departamento">Departamento:</label>
+                <input type="text" id="departamento" name="departamento">
+            </div>
+            <div class="form-group">
+                <label for="jefe">Jefe:</label>
+                <input type="text" id="jefe" name="jefe">
+            </div>
+            <div class="form-group">
+                <label for="salario_prima">Salario prima:</label>
+                <input type="text" id="salario_prima" name="salario_prima">
+            </div>
+            <div class="form-group">
+                <label for="salario_sin_prima">Salario sin prima:</label>
+                <input type="text" id="salario_sin_prima" name="salario_sin_prima">
+            </div>
+        </div>
+
+        <button type="submit">Guardar</button>
+
+        <script>
+            function mostrarDatosConyuge() {
+                const estadoCivil = document.getElementById('estado_civil').value;
+                const datosConyugeDiv = document.getElementById('datos-conyuge');
+                if (estadoCivil !== 'Soltero') {
+                    datosConyugeDiv.classList.remove('hidden');
+                } else {
+                    datosConyugeDiv.classList.add('hidden');
+                }
+            }
+
+            function mostrarDatosFamiliares() {
+                const tieneFamiliares = document.getElementById('tiene_familiares').value;
+                const datosFamiliaresDiv = document.getElementById('datos-familiares');
+                if (tieneFamiliares === 'Sí') {
+                    datosFamiliaresDiv.classList.remove('hidden');
+                } else {
+                    datosFamiliaresDiv.classList.add('hidden');
+                }
+            }
+
+            function mostrarTratamiento() {
+                const padeceEnfermedad = document.getElementById('padece_enfermedad').value;
+                const tratamientoDiv = document.getElementById('tratamiento-container');
+                if (padeceEnfermedad === 'Sí') {
+                    tratamientoDiv.classList.remove('hidden');
+                } else {
+                    tratamientoDiv.classList.add('hidden');
+                }
+            }
+
+            function mostrarTipoDiscapacidad() {
+                const discapacidad = document.getElementById('discapacidad').value;
+                const tipoDiscapacidadDiv = document.getElementById('tipo-discapacidad-container');
+                if (discapacidad === 'Sí') {
+                    tipoDiscapacidadDiv.classList.remove('hidden');
+                } else {
+                    tipoDiscapacidadDiv.classList.add('hidden');
+                }
+            }
+
+            function calcularEdad() {
+                const fechaNacimientoInput = document.getElementById('fecha_nacimiento');
+                const edadInput = document.getElementById('edad');
+                const fechaNacimiento = new Date(fechaNacimientoInput.value);
+                const hoy = new Date();
+                let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+                const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+                if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                    edad--;
+                }
+                edadInput.value = edad >= 0 ? edad : '';
+            }
+
+            function calcularEdadFamiliar() {
+                const fechaNacimientoInput = document.getElementById('fecha_nacimiento_familiar');
+                const edadInput = document.getElementById('edad_familiar');
+                const fechaNacimiento = new Date(fechaNacimientoInput.value);
+                const hoy = new Date();
+                let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+                const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+                if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                    edad--;
+                }
+                edadInput.value = edad >= 0 ? edad : '';
+            }
+
+            function mostrarCantidadHijos() {
+                const tieneHijosSelect = document.getElementById('tiene_hijos');
+                const cantidadHijosContainer = document.getElementById('cantidad-hijos-container');
+                const cantidadHijosSelectElement = document.getElementById('cantidad_hijos');
+                const datosHijosContainer = document.getElementById('datos-hijos-container');
+
+                if (tieneHijosSelect.value === 'Sí') {
+                    cantidadHijosContainer.classList.remove('hidden');
+                    // Limpiar los formularios de hijos anteriores
+                    datosHijosContainer.innerHTML = '';
+                } else {
+                    cantidadHijosContainer.classList.add('hidden');
+                    datosHijosContainer.innerHTML = '';
+                }
+            }
+
+            function mostrarDatosHijos() {
+                const cantidadHijos = parseInt(document.getElementById('cantidad_hijos').value);
+                const datosHijosContainer = document.getElementById('datos-hijos-container');
+                datosHijosContainer.innerHTML = ''; // Limpiar formularios anteriores
+
+                for (let i = 0; i < cantidadHijos; i++) {
+                    const hijoDiv = document.createElement('div');
+                    hijoDiv.classList.add('hijo-form');
+                    hijoDiv.innerHTML = `
+                        <h4>Datos del Hijo ${i + 1}</h4>
+                        <div class="form-group">
+                            <label for="genero_hijo_${i}">Género:</label>
+                            <select id="genero_hijo_${i}" name="hijos[${i}][genero]">
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombres_hijo_${i}">Nombres:</label>
+                            <input type="text" id="nombres_hijo_${i}" name="hijos[${i}][nombres]">
+                        </div>
+                        <div class="form-group">
+                            <label for="fecha_nacimiento_hijo_${i}">Fecha de nacimiento:</label>
+                            <input type="date" id="fecha_nacimiento_hijo_${i}" name="hijos[${i}][fecha_nacimiento]" onchange="calcularEdadHijo(${i})">
+                        </div>
+                        <div class="form-group">
+                            <label for="edad_hijo_${i}">Edad:</label>
+                            <input type="text" id="edad_hijo_${i}" name="hijos[${i}][edad]" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="talla_zapato_hijo_${i}">Talla de zapato:</label>
+                            <input type="text" id="talla_zapato_hijo_${i}" name="hijos[${i}][talla_zapato]">
+                        </div>
+                        <div class="form-group">
+                            <label for="talla_camisa_hijo_${i}">Talla de camisa:</label>
+                            <input type="text" id="talla_camisa_hijo_${i}" name="hijos[${i}][talla_camisa]">
+                        </div>
+                        <div class="form-group">
+                            <label for="talla_pantalon_hijo_${i}">Talla de pantalón:</label>
+                            <input type="text" id="talla_pantalon_hijo_${i}" name="hijos[${i}][talla_pantalon]">
+                        </div>
+                        <div class="form-group">
+                            <label for="enfermedad_hijo_${i}">Padece Enfermedad:</label>
+                            <select id="enfermedad_hijo_${i}" name="hijos[${i}][enfermedad]">
+                                <option value="No">No</option>
+                                <option value="Sí">Sí</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tratamiento_hijo_${i}">Tratamiento:</label>
+                            <input type="text" id="tratamiento_hijo_${i}" name="hijos[${i}][tratamiento]">
+                        </div>
+                        <div class="form-group">
+                            <label for="discapacidad_hijo_${i}">Discapacidad:</label>
+                            <select id="discapacidad_hijo_${i}" name="hijos[${i}][discapacidad]">
+                                <option value="No">No</option>
+                                <option value="Sí">Sí</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo_discapacidad_hijo_${i}">Tipo de discapacidad:</label>
+                            <input type="text" id="tipo_discapacidad_hijo_${i}" name="hijos[${i}][tipo_discapacidad]">
+                        </div>
+                    `;
+                    datosHijosContainer.appendChild(hijoDiv);
+                }
+                calcularCargaFamiliar();
+            }
+
+            function calcularEdadHijo(index) {
+                const fechaNacimientoInput = document.getElementById(`fecha_nacimiento_hijo_${index}`);
+                const edadInput = document.getElementById(`edad_hijo_${index}`);
+                const fechaNacimiento = new Date(fechaNacimientoInput.value);
+                const hoy = new Date();
+                let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+                const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+                if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                    edad--;
+                }
+                edadInput.value = edad >= 0 ? edad : '';
+            }
+
+            function calcularCargaFamiliar() {
+                let totalCarga = 1; // El trabajador cuenta como 1
+                const estadoCivil = document.getElementById('estado_civil').value;
+                const tieneFamiliares = document.getElementById('tiene_familiares').value;
+                const cantidadHijos = parseInt(document.getElementById('cantidad_hijos').value);
+
+                if (estadoCivil !== 'Soltero') {
+                    totalCarga++;
+                }
+                if (tieneFamiliares === 'Sí') {
+                    totalCarga++;
+                }
+                totalCarga += cantidadHijos;
+
+                document.getElementById('total_carga_familiar').value = totalCarga;
+            }
+
+            // Llamar a las funciones al cargar la página para establecer el estado inicial
+            window.onload = function() {
+                mostrarDatosConyuge();
+                mostrarDatosFamiliares();
+                mostrarTratamiento();
+                mostrarTipoDiscapacidad();
+                mostrarCantidadHijos();
+                calcularCargaFamiliar();
+            };
+        </script>
+    </form>
+</body>
+</html>
